@@ -16,7 +16,7 @@ git status --porcelain | (
         "R"*)          renamed+=(${line:2}) ; ;;
         esac
     done
-
+    # TODO Check if there are no files to add and exit script
     add=$(gum choose --cursor-prefix "[ ] " --selected-prefix "[✓] " --no-limit "${dirty[@]}")
     addArr=(${add})
     git add "${addArr[@]}"
