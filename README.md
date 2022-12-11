@@ -1,3 +1,4 @@
 # gacp
-pretty script for git add commit push
-asd
+Pretty script to combine git add commit push.
+
+Uses [gum](https://github.com/charmbracelet/gum) for styling.
