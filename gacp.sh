@@ -2,7 +2,7 @@
 
 declare -a addable untracked deleted newfile copied renamed
 git status --porcelain | (
-    # IFS needed to keep the whitespaces
+    # IFS needed to keep the whitespaces for some reason(<3 shell scripts)
     # TODO Sort out which of these statuses need to be git added
     while IFS= read line ; do
         case "${line}" in
@@ -25,10 +25,12 @@ git status --porcelain | (
 
     add=$(gum choose --cursor-prefix "[ ] " --selected-prefix "[✓] " --no-limit "${addable[@]}")
     addArr=(${add})
+
     git add "${addArr[@]}"
-    # TODO Add a check here that everything is added before commiting
-    # TODO Output result of check to confirm for user that everything is added
+
     git commit -m "$(gum input --width 50 --placeholder "Commit message")"
+
+
     gum confirm "Push?" && git push
 )
 
