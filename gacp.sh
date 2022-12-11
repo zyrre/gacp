@@ -9,11 +9,12 @@ git status --porcelain | (
         " M"*)          addable+=(${line:2}) ; ;;
         "MM"*)          addable+=(${line:2}) ; ;;
         "UU"*)         addable+=(${line:2}) ; ;;
-        "D"*)          deleted+=(${line:2}) ; ;;
+        "D"*)          addable+=(${line:2}) ; ;;
+        " D"*)          addable+=(${line:2}) ; ;;
         "??"*)         addable+=(${line:2}) ; ;;
-        "A"*)           newfile+=(${line:2}) ; ;;
-        "C"*)          copied+=(${line:2}) ; ;;
-        "R"*)          renamed+=(${line:2}) ; ;;
+        "A"*)           addable+=(${line:2}) ; ;;
+        "C"*)          addable+=(${line:2}) ; ;;
+        "R"*)          addable+=(${line:2}) ; ;;
         esac
     done
 
