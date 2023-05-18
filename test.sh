@@ -9,10 +9,17 @@ fi
 
 # Check what changes have happened in the current git directory
 CHANGES=$(git status --porcelain)
-echo "$CHANGES"
 
 # Present a list of the potential files to be added
 FILES_TO_ADD=$(echo "$CHANGES" | awk '{print $2}')
+
+# Check if there are any files to add
+if [ -z "$FILES_TO_ADD" ]
+then
+    echo "No changes detected. Exiting."
+    exit
+fi
+
 CHOSEN_FILES=$(gum choose $FILES_TO_ADD)
 
 # Git add the files selected by the user
@@ -26,4 +33,3 @@ git commit -m "$COMMIT_MSG"
 
 # Ask the user if they want to push the changes, and if confirmed, push the changes
 gum confirm "Push changes?" && git push
-
