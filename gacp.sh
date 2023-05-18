@@ -1,37 +1,36 @@
 #!/bin/bash
 
-declare -a addable untracked deleted newfile copied renamed
-git status --porcelain | (
-    # IFS needed to keep the whitespaces for some reason(<3 shell scripts)
-    # TODO Sort out which of these statuses need to be git added
-    while IFS= read line ; do
-        case "${line}" in
-        " M"*)          addable+=(${line:2}) ; ;;
-        "MM"*)          addable+=(${line:2}) ; ;;
-        "UU"*)         addable+=(${line:2}) ; ;;
-        "D"*)          addable+=(${line:2}) ; ;;
-        " D"*)          addable+=(${line:2}) ; ;;
-        "??"*)         addable+=(${line:2}) ; ;;
-        "A"*)           addable+=(${line:2}) ; ;;
-        "C"*)          addable+=(${line:2}) ; ;;
-        "R"*)          addable+=(${line:2}) ; ;;
-        esac
-    done
+# Check if 'gum' command is available
+if ! command -v gum &> /dev/null
+then
+    echo "'gum' command could not be found. Please install it and try again."
+    echo "https://github.com/charmbracelet/gum"
+    exit
+fi
 
-    # Check if there are no files to add
-    if [ ${#addable[@]} -eq 0 ]; then
-        echo "There are no new or modified files. Exiting."
-        exit 1
-    fi
+# Check what changes have happened in the current git directory
+CHANGES=$(git status --porcelain)
 
-    add=$(gum choose --cursor-prefix "[ ] " --selected-prefix "[✓] " --no-limit "${addable[@]}")
-    addArr=(${add})
+# Present a list of the potential files to be added
+FILES_TO_ADD=$(echo "$CHANGES" | awk '{print $2}')
 
-    git add "${addArr[@]}"
+# Check if there are any files to add
+if [ -z "$FILES_TO_ADD" ]
+then
+    echo "No changes detected. Exiting."
+    exit
+fi
 
-    git commit -m "$(gum input --width 50 --placeholder "Commit message")"
+CHOSEN_FILES=$(gum choose --header "Which files do you want to add?" --cursor-prefix "[ ] " --unselected-prefix "[ ] " --selected-prefix "[✓] " --no-limit $FILES_TO_ADD)
 
+# Git add the files selected by the user
+git add $CHOSEN_FILES
 
-    gum confirm "Push?" && git push
-)
+# Ask user for commit message§-
+COMMIT_MSG=$(gum input --placeholder "Enter commit message")
 
+# Commit the changes
+git commit -m "$COMMIT_MSG"
+
+# Ask the user if they want to push the changes, and if confirmed, push the changes
+gum confirm "Push changes?" && git push
