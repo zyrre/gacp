@@ -20,7 +20,7 @@ then
     exit
 fi
 
-CHOSEN_FILES=$(gum choose $FILES_TO_ADD)
+CHOSEN_FILES=$(gum choose --cursor-prefix "[ ] " --selected-prefix "[✓] " --no-limit "${FILES_TO_ADD[@]}")
 
 # Git add the files selected by the user
 git add $CHOSEN_FILES
